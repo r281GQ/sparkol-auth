@@ -1,5 +1,7 @@
 import React from "react";
 
+import { setToken, removeToken } from "../utils";
+
 const AuthContext = React.createContext();
 
 const Auth = (props) => {
@@ -19,7 +21,8 @@ const Auth = (props) => {
 
       const json = await response.json();
 
-      // set token
+      setToken(json.token);
+
       // update resolved
 
       return json;
@@ -32,7 +35,8 @@ const Auth = (props) => {
 
   const logout = React.useCallback(() => {
     // remove user
-    // remove token
+
+    removeToken();
   }, []);
 
   const user = {};
