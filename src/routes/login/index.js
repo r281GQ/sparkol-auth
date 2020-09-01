@@ -1,13 +1,20 @@
 import { css, jsx } from "@emotion/core";
 import { useForm } from "react-hook-form";
+import { useHistory } from "react-router-dom";
+
+import { useLogin } from "../../services/auth";
 
 /** @jsx jsx */
-const Login = (props) => {
+const Login = () => {
   const { register, handleSubmit } = useForm();
+  const { push } = useHistory();
+  const [login] = useLogin();
 
   const onSubmit = async (data) => {
     try {
-      console.log(data);
+      await login(data);
+
+      push("/");
     } catch {}
   };
 
@@ -18,12 +25,7 @@ const Login = (props) => {
           margin-bottom: 8px;
         `}
       >
-        <input
-          name="username"
-          defaultValue="jeff1967"
-          placeholder="username"
-          ref={register}
-        />
+        <input name="username" placeholder="username" ref={register} />
       </div>
       <div
         css={css`
@@ -32,13 +34,14 @@ const Login = (props) => {
       >
         <input
           name="password"
-          defaultValue="hotdog"
           placeholder="password"
           type="password"
           ref={register}
         />
       </div>
-      <input type="submit" value="log in" />
+      <button type="submit" value="log in">
+        log in
+      </button>
     </form>
   );
 };
