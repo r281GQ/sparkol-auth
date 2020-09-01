@@ -18,6 +18,8 @@ jest.mock("react-router-dom", () => {
 });
 
 describe("<Login />", () => {
+  const { push } = useHistory();
+
   const worker = setupServer(
     rest.post(`http://localhost:3333/login`, (req, res, ctx) => {
       return res(ctx.json({ user: { id: 1, name: "John" }, token: "token" }));
@@ -30,6 +32,10 @@ describe("<Login />", () => {
 
   afterAll(() => {
     worker.close();
+  });
+
+  beforeEach(() => {
+    push.mockClear();
   });
 
   test("renders without crash", () => {
@@ -65,8 +71,6 @@ describe("<Login />", () => {
       </Auth>
     );
 
-    const { push } = useHistory();
-
     const username = getByPlaceholderText("username");
     const password = getByPlaceholderText("password");
 
@@ -79,6 +83,38 @@ describe("<Login />", () => {
       userEvent.click(logInButton);
       await waitFor(() => {
         return expect(push).toHaveBeenCalledWith("/");
+      });
+    });
+  });
+
+  test("unsuccessful login should render error message", async () => {
+    worker.use(
+      rest.post(`http://localhost:3333/login`, (req, res, ctx) => {
+        return res(ctx.status(401), ctx.text("Invalid Username or Password"));
+      })
+    );
+
+    const { getByPlaceholderText, getByText } = render(
+      <Auth>
+        <Login />
+      </Auth>
+    );
+
+    const username = getByPlaceholderText("username");
+    const password = getByPlaceholderText("password");
+
+    const logInButton = getByText("log in");
+
+    userEvent.type(username, "John");
+    userEvent.type(password, "password");
+
+    await act(async () => {
+      userEvent.click(logInButton);
+
+      await waitFor(() => {
+        const errorMessage = getByText("Unauthorized");
+
+        return expect(errorMessage).toBeInTheDocument();
       });
     });
   });

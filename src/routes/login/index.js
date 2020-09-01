@@ -8,7 +8,7 @@ import { useLogin } from "../../services/auth";
 const Login = () => {
   const { register, handleSubmit } = useForm();
   const { push } = useHistory();
-  const [login] = useLogin();
+  const [login, { error }] = useLogin();
 
   const onSubmit = async (data) => {
     try {
@@ -42,6 +42,7 @@ const Login = () => {
       <button type="submit" value="log in">
         log in
       </button>
+      {error && error}
     </form>
   );
 };
