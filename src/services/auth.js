@@ -11,6 +11,54 @@ const SET_REJECTED_LOGIN = "set_rejected_login";
 const SET_RESOLVED_LOGIN = "set_resolved_login";
 const SET_START_LOGIN = "set_start_login";
 
+/**
+ *  The core of the app.
+ *
+ *  There are so many solution to implement this:
+ *
+ *  - redux with redux thunk, redux saga
+ *  - xstate
+ *  - some prefer observables
+ *
+ *  Why did I choose this instead of the other despite this is a greenfield project.
+ *
+ *  First, it is a greenfield project from the perspective of the code. I don't know anything about
+ *  my teammates. If for example no one have used redux-saga before then and we have limited time
+ *  then we might just want to go with things everyone is familiar with **AND** is a good solution.
+ *
+ *  React's Context API with hooks is simple and powerful at the same time.
+ *
+ *  That is also the reason why I did not do this app in other language. I might have used ReasonML
+ *  but JS/TS is much easier to work with in a group if there is no **ASSUMPTION** on the team.
+ *
+ *  Second, it is a greenfield project from the web perspective but not from the API.
+ *  I don't know if that api is the main api? Or there will be microservices and this just takes care of
+ *  authentication. Or graphql will be used?
+ *
+ *  There is already a limitation of the api even before getting any further. That is, I'd be uncomfortable
+ *  with storing the JWT token to local/session storage or javascript web persisted cookies.
+ *
+ *  So without having any control on the server I'd like to make the least assumption on the direction where the backend
+ *  will evolve.
+ *
+ *  This solution gives plenty of option in the upcoming days.
+ *
+ *  Graphql will be used? Great. Use apollo or urql and just grab the token from 'utils/token'. Change some
+ *  logic around the login function (see below) but the interface remains the same.
+ *
+ *  More rest api endpoint? Great. Maybe use redux to implement some cache, with redux thunk, or sagas.
+ *
+ *  Or search for some cache library. Just again, use 'utils/token'.
+ *
+ *  Plenty of options.
+ *
+ *  ---
+ *
+ *  After describing my motivations let me describe how this thing works.
+ *
+ *
+ *  First, since the <Auth />
+ */
 const Auth = (props) => {
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
