@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import Home from "./home";
 import Login from "./login";
@@ -15,8 +15,10 @@ import PrivateRoute from "../utils/privateRoute";
 const Routes = React.memo(function Routes() {
   return (
     <BrowserRouter>
-      <PrivateRoute path="/" exact component={Home} />
-      <Route path="/login" exact component={Login} />
+      <Switch>
+        <PrivateRoute path="/" exact component={Home} />
+        <Route path="/login" exact component={Login} />
+      </Switch>
     </BrowserRouter>
   );
 });
