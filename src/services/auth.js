@@ -56,8 +56,26 @@ const SET_START_LOGIN = "set_start_login";
  *
  *  After describing my motivations let me describe how this thing works.
  *
+ *  First, since the <Auth /> wraps the whole app I use three providers. That way we can use specific hooks
+ *  to get the job done. Every hook gets only the least amount of information -> no unwanted rerenders.
  *
- *  First, since the <Auth />
+ *  First it the login hook.
+ *
+ *  That resembles the syntax of react apollo (no coincidence :)). It gives a tuple, with the handler and meta.
+ *
+ *  The login function under the hood takes care of everything. More on that later.
+ *
+ *  Logout hook works the same. It just much simpler.
+ *
+ *  useMe gives back the auth user.
+ *
+ *  LoginFunction sets the meta, fires the request, sets the token and the user or persist the error.
+ *
+ *  The state that must be reflected in the UI is taken care by a simple reducer.
+ *
+ *  The shared mutable state of token is handled by the token util.
+ *
+ *  Last steps to memoize the callback  and the values that we share with the rest of the app.
  */
 const Auth = (props) => {
   const [state, dispatch] = React.useReducer(
