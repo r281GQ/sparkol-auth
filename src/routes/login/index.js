@@ -44,12 +44,7 @@ const Login = () => {
               margin-bottom: 8px;
             `}
           >
-            <input
-              name="username"
-              defaultValue="jeff1967"
-              placeholder="username"
-              ref={register}
-            />
+            <input name="username" placeholder="username" ref={register} />
           </div>
           <div
             css={css`
@@ -58,7 +53,6 @@ const Login = () => {
           >
             <input
               name="password"
-              defaultValue="hotdog"
               placeholder="password"
               type="password"
               ref={register}
