@@ -1,13 +1,17 @@
 import React from "react";
 import { act, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useHistory } from "react-router-dom";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
 
 import Login from "./../routes/login";
-import Auth from "./../services/auth";
-import { useHistory } from "react-router-dom";
 
+import Auth from "./../services/auth";
+
+/**
+ * Just mock the whole react-router-dom library.
+ */
 jest.mock("react-router-dom", () => {
   const push = jest.fn();
   return {
@@ -18,8 +22,14 @@ jest.mock("react-router-dom", () => {
 });
 
 describe("<Login />", () => {
+  /**
+   * We need this later to match against.
+   */
   const { push } = useHistory();
 
+  /**
+   * This mocks the API on the network level. No need to mock functions at all.
+   */
   const worker = setupServer(
     rest.post(`http://localhost:3333/login`, (req, res, ctx) => {
       return res(ctx.json({ user: { id: 1, name: "John" }, token: "token" }));
@@ -82,12 +92,18 @@ describe("<Login />", () => {
     await act(async () => {
       userEvent.click(logInButton);
       await waitFor(() => {
+        /**
+         * We assume redirection took place by checking is the mocked version of push was called.
+         */
         return expect(push).toHaveBeenCalledWith("/");
       });
     });
   });
 
   test("unsuccessful login should render error message", async () => {
+    /**
+     * Use a different outcome for the login endpoint.
+     */
     worker.use(
       rest.post(`http://localhost:3333/login`, (req, res, ctx) => {
         return res(ctx.status(401), ctx.text("Invalid Username or Password"));
@@ -112,6 +128,9 @@ describe("<Login />", () => {
       userEvent.click(logInButton);
 
       await waitFor(() => {
+        /**
+         * Check if the error message is in the DOM.
+         */
         const errorMessage = getByText("Unauthorized");
 
         return expect(errorMessage).toBeInTheDocument();
