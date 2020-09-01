@@ -2,7 +2,9 @@ import React from "react";
 
 import { setToken, removeToken } from "../utils";
 
-const AuthContext = React.createContext();
+const MeContext = React.createContext();
+const LoginProvider = React.createContext();
+const LogoutProvider = React.createContext();
 
 const REMOVE_AUTH = "remove_auth";
 const SET_REJECTED_LOGIN = "set_rejected_login";
@@ -113,17 +115,42 @@ const Auth = (props) => {
     removeToken();
   }, []);
 
+  const loginBag = React.useMemo(() => {
+    return [
+      login,
+      {
+        user: state.login.user,
+        error: state.login.error,
+        loading: state.login.loading,
+      },
+    ];
+  }, [login, state.login.user, state.login.error, state.login.loading]);
+
+  const logoutBag = React.useMemo(() => {
+    return [logout];
+  }, [logout]);
+
   const user = state.login.user;
 
   return (
-    <AuthContext.Provider value={{ login, logout, user }}>
-      {props.children}
-    </AuthContext.Provider>
+    <LoginProvider.Provider value={loginBag}>
+      <LogoutProvider.Provider value={logoutBag}>
+        <MeContext.Provider value={user}>{props.children}</MeContext.Provider>
+      </LogoutProvider.Provider>
+    </LoginProvider.Provider>
   );
 };
 
-export const useAuth = () => {
-  return React.useContext(AuthContext);
+export const useMe = () => {
+  return React.useContext(MeContext);
+};
+
+export const useLogin = () => {
+  return React.useContext(LoginProvider);
+};
+
+export const useLogout = () => {
+  return React.useContext(LogoutProvider);
 };
 
 export default Auth;
